@@ -1,7 +1,7 @@
 #Python nativo
 from uuid import UUID
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, List
 
 # Pydantic
 from pydantic import BaseModel
@@ -10,6 +10,7 @@ from pydantic import Field
 
 #FastAPI
 from fastapi import FastAPI
+from fastapi import status
 
 app = FastAPI()
 
@@ -50,8 +51,76 @@ class Tweet(BaseModel):
     update_at:Optional[datetime] = Field(default=None)
     by:User = Field(...)
 
+#Path operations
+
 @app.get(path="/")
 def home():
     return {
         "twitter API":"Working!"
     }
+
+##users
+
+@app.post(
+    path="/signup",
+    response_model=User,
+    status_code=status.HTTP_201_CREATED,
+    summary="Register a User",
+    tags=["User"]
+)
+def signup():
+    pass
+
+@app.post(
+    path="/login",
+    response_model=User,
+    status_code=status.HTTP_200_CREATED,
+    summary="Login a User",
+    tags=["User"]
+)
+def login():
+    pass
+
+@app.get(
+    path="/users",
+    response_model=List[User],
+    status_code=status.HTTP_200_CREATED,
+    summary="Show all users",
+    tags=["User"]
+)
+def show_all_users():
+    pass
+
+@app.get(
+    path="/users/{user_id}",
+    response_model=User,
+    status_code=status.HTTP_200_CREATED,
+    summary="Show a User",
+    tags=["User"]
+)
+def show_a_user():
+    pass
+
+@app.delete(
+    path="/users/{user_id}/delete",
+    response_model=User,
+    status_code=status.HTTP_200_CREATED,
+    summary="Delete a User",
+    tags=["User"]
+)
+def delete_a_user():
+    pass
+
+@app.put(
+    path="/users/{user_id}/update",
+    response_model=User,
+    status_code=status.HTTP_200_CREATED,
+    summary="Update a User",
+    tags=["User"]
+)
+def update_a_user():
+    pass
+
+##Tweets
+
+
