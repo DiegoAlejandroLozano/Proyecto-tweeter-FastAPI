@@ -62,12 +62,6 @@ class Tweet(BaseModel):
 
 #Path operations
 
-@app.get(path="/")
-def home():
-    return {
-        "twitter API":"Working!"
-    }
-
 ##users
 
 ### Register a user
@@ -188,9 +182,22 @@ def update_a_user():
 
 )
 def home():
-    return {
-        "twitter API":"Working!"
-    }
+    """
+    This path operation shows all tweets in the app
+
+    Parameters:
+        -
+
+    Return a json list with all tweets in the app, with the following keys
+        -tweet_id:UUID
+        -content:str
+        -create_at:datetime
+        -updated_at:Optional[datetime]
+        -by: User
+    """
+    with open('tweets.json', "r", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        return results
 
 ### Post a Tweet
 @app.post(
