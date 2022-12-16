@@ -1,1 +1,41 @@
-[]
+[
+    {
+        "tweet_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "content": "string",
+        "create_at": "2022-12-16 17:53:41.960564",
+        "updated_at": "2022-12-16 22:53:54.557000+00:00",
+        "by": {
+            "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "email": "user@example.com",
+            "first_name": "string",
+            "last_name": "string",
+            "birth_date": "2022-12-16"
+        }
+    },
+    {
+        "tweet_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "content": "tweet 2",
+        "create_at": "2022-12-16 17:53:41.960564",
+        "updated_at": "2022-12-16 22:53:54.557000+00:00",
+        "by": {
+            "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "email": "user2@example.com",
+            "first_name": "user2",
+            "last_name": "user2 :D",
+            "birth_date": "2022-12-16"
+        }
+    },
+    {
+        "tweet_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "content": "tweet 3",
+        "create_at": "2022-12-16 17:53:41.960564",
+        "updated_at": "2022-12-16 22:53:54.557000+00:00",
+        "by": {
+            "user_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "email": "user3@example.com",
+            "first_name": "user3",
+            "last_name": "user3 :D",
+            "birth_date": "2022-12-16"
+        }
+    }
+]
