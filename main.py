@@ -13,6 +13,7 @@ from pydantic import Field
 from fastapi import FastAPI
 from fastapi import status
 from fastapi import Body
+from fastapi import HTTPException
 
 app = FastAPI()
 
@@ -59,6 +60,14 @@ class Tweet(BaseModel):
     create_at:datetime = Field(default=datetime.now())
     updated_at:Optional[datetime] = Field(default=None)
     by:User = Field(...)
+
+class LoginUser(BaseModel):
+    email:EmailStr = Field(...)
+    password:str = Field(
+        ...,
+        min_length=8,
+        max_length=64
+    )
 
 #Path operations
 
@@ -108,8 +117,41 @@ def signup(user:UserRegister=Body(...)):
     summary="Login a User",
     tags=["User"]
 )
-def login():
-    pass
+def login(login:LoginUser=Body(...)):
+    """
+    login
+
+    This function is in charge of verifying if a user is registered. To carry out the verification, the 
+    email and password are compared with the email and password of the users who have already been registered.
+
+    Parameters:
+        -Request body parameter
+            -login:LoginUser
+
+    Returns a json with the basic user information:
+        -user_id:UUID
+        -email:EmailStr
+        -first_name:str
+        -last_name:str
+        -birth_date:datetime
+    """
+    with open("users.json", "r", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        for result in results:
+            if login.email == result["email"]:
+                if login.password == result["password"]:
+                    del result['password']
+                    return result
+                else:
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="The password does not match"
+                    )                 
+        #If the email does not match any user, an exception is raised
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The email is not registered"
+        )   
 
 ### Show all the users
 @app.get(
