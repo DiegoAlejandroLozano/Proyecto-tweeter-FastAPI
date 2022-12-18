@@ -493,5 +493,48 @@ def delete_a_tweet(
     summary="Update a tweet",
     tags=["Tweets"]
 )
-def update_a_tweet():
-    pass
+def update_a_tweet(
+    tweet_id:str=Path(
+        ...,
+        title="Tweet ID"
+    ),
+    tweet:Tweet=Body(...)
+):
+    """
+    update_a_tweet
+
+    This function is responsible for updating a Tweet indicated with the ID specified in the URL
+
+    Parameters:
+        -Request PATH parameter
+            -tweet_id:str
+        -Request Body parameter
+
+    Returns a json with the basic information of the tweet that was deleted:
+        -tweet_id:UUID
+        -content:str
+        -create_at:datetime
+        -updated_at:Optional[datetime]
+        -by: User
+    """
+    tweet_dict = tweet.dict()
+    tweet_dict["tweet_id"] = str(tweet_dict["tweet_id"])
+    tweet_dict["create_at"] = str(tweet_dict["create_at"])
+    tweet_dict["updated_at"] = str(tweet_dict["updated_at"])
+    tweet_dict["by"]["user_id"] = str(tweet_dict["by"]["user_id"])
+    tweet_dict["by"]["birth_date"] = str(tweet_dict["by"]["birth_date"])
+
+    with open("tweets.json", "r+", encoding="utf-8") as f:
+        content = json.loads(f.read())
+        for i in range(len(content)):
+            if content[i]["tweet_id"] == tweet_id:
+                content[i] = tweet_dict
+                f.truncate(0)
+                f.seek(0)
+                f.write(json.dumps(content, indent=2))
+                return tweet_dict
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The tweet was not found"
+        )
+
