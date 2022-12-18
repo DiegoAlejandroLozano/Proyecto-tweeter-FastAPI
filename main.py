@@ -6,4 +6,3 @@ app = FastAPI()
 def home():
     return {
         "twitter API":"Working!"
-    }
