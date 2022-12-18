@@ -70,6 +70,21 @@ class LoginUser(BaseModel):
         max_length=64
     )
 
+class UpdateUser(BaseModel):
+    email:EmailStr=Field(...)
+    first_name:str = Field(
+        ...,
+        min_length=1,
+        max_length=50
+    )
+    last_name:str = Field(
+        ...,
+        min_length=1,
+        max_length=50
+    )
+    birth_date:Optional[date] = Field(default=None)
+
+
 #Path operations
 
 ##users
@@ -271,13 +286,53 @@ def delete_a_user(
 ### Update a user
 @app.put(
     path="/users/{user_id}/update",
-    response_model=User,
+    response_model=UpdateUser,
     status_code=status.HTTP_200_OK,
     summary="Update a User",
     tags=["User"]
 )
-def update_a_user():
-    pass
+def update_a_user(
+    user_id:str = Path(...),
+    user_updated:UpdateUser = Body(...)
+):
+    """
+    update_a_user
+
+    This function is used to update user fields. To choose which user the data will be updated to, the ID passed in the path is used.
+
+    Parameters:
+        -Request path parameter
+            -user_id:str
+        -Request body parameter
+            -user_updated:UpdateUser
+
+    Returns a json with the updated information:
+        -email:EmailStr
+        -first_name:str
+        -last_name:str
+        -birth_date:datetime
+    """
+    with open("users.json", "r+", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        user_dic = user_updated.dict()
+        for i in range(len(results)):
+            if results[i]["user_id"] == user_id:
+                results[i] = {
+                    "user_id":results[i]["user_id"],
+                    "email": user_dic["email"],
+                    "first_name": user_dic["first_name"],
+                    "last_name": user_dic["last_name"],
+                    "birth_date": str(user_dic["birth_date"]),
+                    "password": results[i]["password"]
+                }                 
+                f.truncate(0)
+                f.seek(0)
+                f.write(json.dumps(results, indent=2))
+                return user_updated
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The user was not found"
+        )
 
 ##Tweets
 
