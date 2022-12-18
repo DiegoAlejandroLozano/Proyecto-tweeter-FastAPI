@@ -260,7 +260,7 @@ def delete_a_user(
         -Request path parameter
             -user_id:str
 
-    Returns a json with the basic user information:
+    Returns a json with the basic information of the deleted user:
         -user_id:UUID
         -email:EmailStr
         -first_name:str
@@ -396,11 +396,9 @@ def post(tweet:Tweet=Body(...)):
         tweet_dict["updated_at"] = str(tweet_dict["updated_at"])
         tweet_dict["by"]["user_id"] = str(tweet_dict["by"]["user_id"])
         tweet_dict["by"]["birth_date"] = str(tweet_dict["by"]["birth_date"])
-
-
         results.append(tweet_dict)
         f.seek(0)
-        f.write(json.dumps(results))
+        f.write(json.dumps(results, indent=2))
         return tweet
 
 ### Show a Tweet
@@ -412,7 +410,10 @@ def post(tweet:Tweet=Body(...)):
     tags=["Tweets"]
 )
 def show_a_tweet(
-    tweet_id:str=Path(...)
+    tweet_id:str=Path(
+        ...,
+        title="Tweet ID"
+    )
 ):
     """
     show_a_tweet
@@ -448,8 +449,41 @@ def show_a_tweet(
     summary="Delete a tweet",
     tags=["Tweets"]
 )
-def delete_a_tweet():
-    pass
+def delete_a_tweet(
+    tweet_id:str = Path(
+        ...,
+        title="Tweet ID"
+    )
+):
+    """
+    show_a_tweet
+
+    This function is responsible for deleting the Tweet indicated by the ID, which is passed through the URL
+
+    Parameters:
+        -Request PATH parameter
+            -tweet_id:str
+
+    Returns a json with the basic information of the tweet that was deleted:
+        -tweet_id:UUID
+        -content:str
+        -create_at:datetime
+        -updated_at:Optional[datetime]
+        -by: User
+    """
+    with open("tweets.json", "r+", encoding="utf-8") as f:
+        content = json.loads(f.read())
+        for i in range(len(content)):
+            if content[i]["tweet_id"] == tweet_id:
+                deleted_tweet = content.pop(i)
+                f.truncate(0)
+                f.seek(0)
+                f.write(json.dumps(content, indent=2))
+                return deleted_tweet
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The tweet was not found"
+        )
 
 ### Update a Tweet
 @app.put(
