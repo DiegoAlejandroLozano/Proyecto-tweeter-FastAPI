@@ -106,7 +106,7 @@ def signup(user:UserRegister=Body(...)):
         tweet_dict["birth_date"] = str(tweet_dict["birth_date"])
         results.append(tweet_dict)
         f.seek(0)
-        f.write(json.dumps(results))
+        f.write(json.dumps(results, indent=2))
         return user
 
 
@@ -225,13 +225,48 @@ def show_a_user(
 ### Delete a user
 @app.delete(
     path="/users/{user_id}/delete",
-    response_model=User,
+    #response_model=User,
     status_code=status.HTTP_200_OK,
     summary="Delete a User",
     tags=["User"]
 )
-def delete_a_user():
-    pass
+def delete_a_user(
+    user_id:str=Path(
+        ...,
+        title="ID user"
+    )
+):
+    """
+    delete_a_user
+
+    This function is responsible for removing a user from the .json file, starting from the ID specified in the URL
+
+    Parameters:
+        -Request path parameter
+            -user_id:str
+
+    Returns a json with the basic user information:
+        -user_id:UUID
+        -email:EmailStr
+        -first_name:str
+        -last_name:str
+        -birth_date:datetime
+    """
+    with open("users.json", "r+", encoding="utf-8") as f:
+        results = json.loads(f.read())        
+        for i in range(len(results)):
+            if results[i]["user_id"] == user_id:
+                deleted_user = results.pop(i)
+                f.truncate(0)
+                f.seek(0)
+                f.write(json.dumps(results, indent=2))
+                del deleted_user["password"]
+                return deleted_user
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The user was not found"
+        )
+        
 
 ### Update a user
 @app.put(
